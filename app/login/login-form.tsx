@@ -40,7 +40,6 @@ export function LoginForm({ next }: { next?: string }) {
         setError("Check your email for the magic link.");
         return;
       }
-      router.push(next ?? "/dashboard");
       router.refresh();
     } catch {
       setError("Something went wrong");

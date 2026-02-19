@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { LoginForm } from "./login-form";
-import { getRoleForUserId } from "@/lib/auth-role";
-
-const ADMIN_EMAIL = "tucker@lowcoresystems.com";
+import { isAdminEmail, getRoleForUserId } from "@/lib/auth-role";
 
 export default async function LoginPage({
   searchParams,
@@ -15,8 +13,7 @@ export default async function LoginPage({
   if (supabase) {
     const { data } = await supabase.auth.getSession();
     if (data.session?.user?.id) {
-      let role = await getRoleForUserId(data.session.user.id, data.session.user.email);
-      if (role === "client" && data.session.user.email?.toLowerCase() === ADMIN_EMAIL) role = "admin";
+      const role = isAdminEmail(data.session.user.email) ? "admin" : await getRoleForUserId(data.session.user.id, data.session.user.email);
       loggedInUser = { email: data.session.user.email ?? "", role };
     }
   }

@@ -2,14 +2,19 @@ import "server-only";
 import { getEnv } from "@/lib/env";
 import { createClient } from "@supabase/supabase-js";
 
-const ADMIN_EMAIL = "tucker@lowcoresystems.com";
+/** Single source of truth: admin always goes to /admin. */
+export const ADMIN_EMAIL = "tucker@lowcoresystems.com";
+
+export function isAdminEmail(email: string | null | undefined): boolean {
+  return typeof email === "string" && email.trim().toLowerCase() === ADMIN_EMAIL;
+}
 
 /**
  * Resolves current user's app role.
  * Admin if: email is the designated admin email, or any membership has role = 'admin'. Otherwise client.
  */
 export async function getRoleForUserId(userId: string, email?: string | null): Promise<"admin" | "client"> {
-  if (email?.toLowerCase() === ADMIN_EMAIL) return "admin";
+  if (isAdminEmail(email)) return "admin";
   try {
     const url = getEnv("NEXT_PUBLIC_SUPABASE_URL");
     const serviceKey = getEnv("SUPABASE_SERVICE_ROLE_KEY");

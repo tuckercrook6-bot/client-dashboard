@@ -1,8 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import { getRoleForUserId, getDefaultRedirectForRole } from "@/lib/auth-role";
-
-const ADMIN_EMAIL = "tucker@lowcoresystems.com";
+import { isAdminEmail, getRoleForUserId, getDefaultRedirectForRole } from "@/lib/auth-role";
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -13,7 +11,7 @@ export async function POST(request: Request) {
     next?: string;
   };
   const defaultNext = nextParam ?? null;
-  const isAdminEmail = email?.toLowerCase() === ADMIN_EMAIL;
+  const adminLogin = isAdminEmail(email);
 
   if (!email) {
     return NextResponse.json({ error: "Email required" }, { status: 400 });
@@ -29,7 +27,7 @@ export async function POST(request: Request) {
 
   if (magicLink) {
     const origin = new URL(request.url).origin;
-    const next = defaultNext ?? (isAdminEmail ? "/admin" : "/dashboard");
+    const next = defaultNext ?? (adminLogin ? "/admin" : "/dashboard");
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
@@ -56,7 +54,7 @@ export async function POST(request: Request) {
   }
   const redirect =
     defaultNext ??
-    (isAdminEmail
+    (adminLogin
       ? "/admin"
       : data.session?.user?.id
         ? getDefaultRedirectForRole(await getRoleForUserId(data.session.user.id, data.session.user.email))

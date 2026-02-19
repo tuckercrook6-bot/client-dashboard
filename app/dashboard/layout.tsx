@@ -4,24 +4,23 @@ import Sidebar from "@/components/dashboard/sidebar";
 import Header from "@/components/dashboard/header";
 import { getUserClients, getCurrentUser } from "@/lib/dashboard";
 import { createClient } from "@/lib/supabase/server";
+import { isAdminEmail } from "@/lib/auth-role";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const ADMIN_EMAIL = "tucker@lowcoresystems.com";
   const supabase = await createClient();
   if (supabase) {
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (authUser?.id) {
-        const isAdminByEmail = authUser.email?.toLowerCase() === ADMIN_EMAIL;
-        let isAdmin = isAdminByEmail;
-        if (!isAdmin) {
-          const { data: memberships } = await supabase.from("memberships").select("role").eq("user_id", authUser.id);
-          isAdmin = Array.isArray(memberships) && memberships.some((m: { role: string }) => m.role === "admin");
-        }
+      if (authUser?.id && isAdminEmail(authUser.email)) {
+        redirect("/admin");
+      }
+      if (authUser?.id && !isAdminEmail(authUser.email)) {
+        const { data: memberships } = await supabase.from("memberships").select("role").eq("user_id", authUser.id);
+        const isAdmin = Array.isArray(memberships) && memberships.some((m: { role: string }) => m.role === "admin");
         if (isAdmin) redirect("/admin");
       }
     } catch {

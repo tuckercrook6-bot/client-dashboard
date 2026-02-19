@@ -1,0 +1,15 @@
+-- SEED user_clients
+-- Run this AFTER 00001_rls_recommended.sql and after you have:
+-- 1. At least one row in clients
+-- 2. At least one user in auth.users (from sign-up)
+--
+-- Replace YOUR_USER_ID with the auth.users.id (UUID) of your first user
+-- Replace YOUR_CLIENT_ID with the clients.id (UUID) they should access
+
+-- Example (uncomment and edit):
+-- INSERT INTO user_clients (user_id, client_id)
+-- VALUES (
+--   'YOUR_USER_ID'::uuid,
+--   'YOUR_CLIENT_ID'::uuid
+-- )
+-- ON CONFLICT (user_id, client_id) DO NOTHING;

@@ -1,0 +1,134 @@
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import {
+  Users,
+  Activity,
+  Settings,
+  LayoutDashboard,
+  ChevronLeft,
+  ChevronRight,
+  Zap,
+  Shield,
+} from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
+const navItems = [
+  { label: "My KPIs", icon: LayoutDashboard, href: "/dashboard" },
+  { label: "Leads", icon: Users, href: "/dashboard/leads" },
+  { label: "Calls", icon: Activity, href: "/dashboard/calls" },
+  { label: "Settings", icon: Settings, href: "/dashboard/settings" },
+]
+
+export function DashboardSidebar() {
+  const [collapsed, setCollapsed] = useState(false)
+  const pathname = usePathname()
+
+  return (
+    <TooltipProvider delayDuration={0}>
+      <aside
+        className={cn(
+          "flex h-screen flex-col border-r border-zinc-800 bg-zinc-900/80 transition-all duration-300",
+          collapsed ? "w-[68px]" : "w-[240px]"
+        )}
+      >
+        <div className="flex h-16 items-center gap-2 border-b border-zinc-800 px-4">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white text-zinc-900">
+            <Zap className="size-4" />
+          </div>
+          {!collapsed && (
+            <span className="text-sm font-semibold tracking-tight text-white">
+              Lowcore Systems
+            </span>
+          )}
+        </div>
+
+        <nav className="flex flex-1 flex-col gap-0.5 p-3" role="navigation" aria-label="Main navigation">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href))
+            const linkContent = (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={cn(
+                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-zinc-800 text-white"
+                    : "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
+                )}
+                aria-current={isActive ? "page" : undefined}
+              >
+                <item.icon className="size-[18px] shrink-0" />
+                {!collapsed && <span>{item.label}</span>}
+              </Link>
+            )
+
+            if (collapsed) {
+              return (
+                <Tooltip key={item.label}>
+                  <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
+                  <TooltipContent side="right" className="font-medium">
+                    {item.label}
+                  </TooltipContent>
+                </Tooltip>
+              )
+            }
+
+            return <div key={item.label}>{linkContent}</div>
+          })}
+          {!collapsed && (
+            <div className="mt-4 border-t border-zinc-800 pt-3">
+              <Link
+                href="/admin"
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
+              >
+                <Shield className="size-[18px] shrink-0" />
+                Admin
+              </Link>
+            </div>
+          )}
+          {collapsed && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/admin"
+                  className="flex w-full items-center justify-center rounded-lg px-3 py-2.5 text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
+                >
+                  <Shield className="size-[18px]" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="font-medium">
+                Admin
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </nav>
+
+        <div className="border-t border-zinc-800 p-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setCollapsed(!collapsed)}
+            className="w-full justify-center text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {collapsed ? (
+              <ChevronRight className="size-4" />
+            ) : (
+              <ChevronLeft className="size-4" />
+            )}
+          </Button>
+        </div>
+      </aside>
+    </TooltipProvider>
+  )
+}

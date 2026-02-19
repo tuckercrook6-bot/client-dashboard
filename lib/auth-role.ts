@@ -2,11 +2,16 @@ import "server-only";
 import { getEnv } from "@/lib/env";
 import { createClient } from "@supabase/supabase-js";
 
-/** Single source of truth: admin always goes to /admin. */
-export const ADMIN_EMAIL = "tucker@lowcoresystems.com";
+/** Single source of truth: these emails always have admin access and go to /admin. */
+export const ADMIN_EMAILS = [
+  "tucker@lowcoresystems.com",
+  "michael@lowcoresystems.com",
+] as const;
+
+const ADMIN_EMAIL_SET = new Set(ADMIN_EMAILS.map((e) => e.toLowerCase()));
 
 export function isAdminEmail(email: string | null | undefined): boolean {
-  return typeof email === "string" && email.trim().toLowerCase() === ADMIN_EMAIL;
+  return typeof email === "string" && ADMIN_EMAIL_SET.has(email.trim().toLowerCase());
 }
 
 /**

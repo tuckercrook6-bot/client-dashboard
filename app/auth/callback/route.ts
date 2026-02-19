@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import { getRoleForUserId, getDefaultRedirectForRole } from "@/lib/auth-role";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -13,9 +12,9 @@ export async function GET(request: Request) {
     if (supabase) {
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
       if (!error && data.session?.user?.id) {
-        const next =
-          nextParam ?? getDefaultRedirectForRole(await getRoleForUserId(data.session.user.id, data.session.user.email));
-        return NextResponse.redirect(`${base}${next}`);
+        // Always land on login page after auth; user chooses Admin or Dashboard from there.
+        const to = nextParam ? `${base}${nextParam}` : `${base}/login`;
+        return NextResponse.redirect(to);
       }
     }
   }

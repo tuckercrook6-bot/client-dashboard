@@ -46,8 +46,6 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Do not auto-redirect logged-in users away from /login or /signup.
-  // Visiting the domain shows the login page; user can then choose Admin or Dashboard.
-
+  // Never redirect from / or /login to /admin so the domain always shows login first.
   return response;
 }

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
-import { DashboardSidebar } from "@/components/dashboard/sidebar";
-import { DashboardHeader } from "@/components/dashboard/header";
+import Sidebar from "@/components/dashboard/sidebar";
+import Header from "@/components/dashboard/header";
 import { getUserClients, getCurrentUser } from "@/lib/dashboard";
 import { createClient } from "@/lib/supabase/server";
 
@@ -32,9 +32,9 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <div className="flex">
-        <DashboardSidebar />
+        <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
-          <DashboardHeader clients={clients} user={user} />
+          <Header clients={clients} user={user} />
           <main className="flex-1 p-6 lg:p-8">{children}</main>
         </div>
       </div>

@@ -132,3 +132,5 @@ export function DashboardSidebar() {
     </TooltipProvider>
   )
 }
+
+export default DashboardSidebar

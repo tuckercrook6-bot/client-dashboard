@@ -104,3 +104,5 @@ export function DashboardHeader({ clients, user }: { clients: UserClient[]; user
     </header>
   )
 }
+
+export default DashboardHeader

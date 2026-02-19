@@ -6,15 +6,15 @@ import { ArrowUpRight } from "lucide-react";
 
 export function ClientsTable({ clients }: { clients: ClientWithUsage[] }) {
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 shadow-sm">
-      <div className="border-b border-zinc-800 px-5 py-4">
+    <div className="rounded-xl border border-zinc-800/90 bg-zinc-900/60 shadow-sm ring-1 ring-zinc-800/50">
+      <div className="border-b border-zinc-800/90 px-5 py-4">
         <h3 className="font-semibold text-white">Clients overview</h3>
         <p className="text-xs text-zinc-500">View KPIs in the client portal</p>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-zinc-800">
+            <tr className="border-b border-zinc-800/90">
               <th className="px-5 py-3.5 text-left font-medium text-zinc-400">Client</th>
               <th className="px-5 py-3.5 text-left font-medium text-zinc-400">Plan</th>
               <th className="px-5 py-3.5 text-left font-medium text-zinc-400">Status</th>
@@ -33,7 +33,7 @@ export function ClientsTable({ clients }: { clients: ClientWithUsage[] }) {
               clients.map((client) => (
                 <tr
                   key={client.id}
-                  className="border-b border-zinc-800/80 last:border-0 transition-colors hover:bg-zinc-800/30"
+                  className="border-b border-zinc-800/60 last:border-0 transition-colors hover:bg-zinc-800/40"
                 >
                   <td className="px-5 py-3.5 font-medium text-white">{client.name}</td>
                   <td className="px-5 py-3.5 text-zinc-400">{client.plan}</td>

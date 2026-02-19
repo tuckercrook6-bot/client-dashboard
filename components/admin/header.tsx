@@ -20,7 +20,7 @@ export function AdminHeader({ clients: _clients, user }: { clients: UserClient[]
   const initials = user?.initials ?? "U";
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-zinc-800 bg-zinc-900/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-zinc-900/80">
+    <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-zinc-800/90 bg-zinc-950/80 px-6 backdrop-blur-md">
       <div>
         <h1 className="text-base font-semibold text-white">Admin</h1>
         <p className="text-xs text-zinc-500">Team overview & client management</p>

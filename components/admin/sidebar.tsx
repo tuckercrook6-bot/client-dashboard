@@ -26,12 +26,12 @@ export function AdminSidebar() {
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          "flex h-screen flex-col border-r border-zinc-800 bg-zinc-900/80 transition-all duration-300",
+          "flex h-screen flex-col border-r border-zinc-800/90 bg-zinc-900/90 backdrop-blur-sm transition-all duration-300",
           collapsed ? "w-[68px]" : "w-[240px]"
         )}
       >
-        <div className="flex h-16 items-center gap-2 border-b border-zinc-800 px-4">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white text-zinc-900">
+        <div className="flex h-16 items-center gap-3 border-b border-zinc-800/90 px-4">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-zinc-900 shadow-sm ring-1 ring-zinc-700/50">
             <Zap className="size-4" />
           </div>
           {!collapsed && (

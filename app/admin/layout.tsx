@@ -10,10 +10,10 @@ export default async function AdminLayout({
 }) {
   const [clients, user] = await Promise.all([getUserClients(), getCurrentUser()]);
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
-      <div className="flex">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 antialiased">
+      <div className="flex min-h-screen">
         <AdminSidebar />
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col bg-gradient-to-br from-zinc-950 via-zinc-950 to-zinc-900/30">
           <AdminHeader clients={clients} user={user} />
           <main className="flex-1 p-6 lg:p-8">{children}</main>
         </div>

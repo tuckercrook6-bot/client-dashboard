@@ -7,6 +7,7 @@ import {
 import { MetricCard } from "@/components/admin/metric-card";
 import { ActivityFeed } from "@/components/admin/activity-feed";
 import { ClientsTable } from "@/components/admin/clients-table";
+import { CreateMichaelCard } from "@/components/admin/create-michael-card";
 import { Users, UserCheck, Phone, UserPlus, MessageSquare } from "lucide-react";
 
 export default async function AdminOverviewPage() {
@@ -62,7 +63,8 @@ export default async function AdminOverviewPage() {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 space-y-6">
+          <CreateMichaelCard />
           <ActivityFeed events={recentEvents} />
         </div>
         <div className="lg:col-span-2">

@@ -10,13 +10,13 @@ export default async function DashboardLayout({
 }: {
   children: ReactNode;
 }) {
+  const ADMIN_EMAIL = "tucker@lowcoresystems.com";
   const supabase = await createClient();
   if (supabase) {
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       if (authUser?.id) {
-        const adminEmail = "tucker@lowcoresystems.com";
-        const isAdminByEmail = authUser.email?.toLowerCase() === adminEmail;
+        const isAdminByEmail = authUser.email?.toLowerCase() === ADMIN_EMAIL;
         let isAdmin = isAdminByEmail;
         if (!isAdmin) {
           const { data: memberships } = await supabase.from("memberships").select("role").eq("user_id", authUser.id);

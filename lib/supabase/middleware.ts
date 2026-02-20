@@ -46,6 +46,10 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Never redirect from / or /login to /admin so the domain always shows login first.
+  // When visiting admin, clear "view as client" cookie so next dashboard visit redirects to admin again
+  if (request.nextUrl.pathname.startsWith("/admin")) {
+    response.cookies.set("view_as_client", "", { path: "/", maxAge: 0 });
+  }
+
   return response;
 }

@@ -77,11 +77,11 @@ export function AdminSidebar() {
           {!collapsed && (
             <div className="mt-4 border-t border-zinc-800 pt-3">
               <Link
-                href="/dashboard"
+                href="/dashboard/portal"
                 className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
               >
                 <ExternalLink className="size-[18px] shrink-0" />
-                Client portal (KPIs)
+                Client portal
               </Link>
             </div>
           )}
@@ -89,14 +89,14 @@ export function AdminSidebar() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="/dashboard"
+                  href="/dashboard/portal"
                   className="flex w-full items-center justify-center rounded-lg px-3 py-2.5 text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
                 >
                   <ExternalLink className="size-[18px]" />
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right" className="font-medium">
-                Client portal (KPIs)
+                Client portal
               </TooltipContent>
             </Tooltip>
           )}

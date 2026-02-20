@@ -37,22 +37,22 @@ export function DashboardSidebar() {
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          "flex h-screen flex-col border-r border-zinc-800 bg-zinc-900/80 transition-all duration-300",
-          collapsed ? "w-[68px]" : "w-[240px]"
+          "flex h-screen flex-col bg-sidebar border-r border-sidebar-border transition-all duration-300",
+          collapsed ? "w-[68px]" : "w-[250px]"
         )}
       >
-        <div className="flex h-16 items-center gap-2 border-b border-zinc-800 px-4">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white text-zinc-900">
-            <Zap className="size-4" />
+        <div className="flex h-16 items-center gap-2.5 border-b border-sidebar-border px-4">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary">
+            <Zap className="size-4 text-sidebar-primary-foreground" />
           </div>
           {!collapsed && (
-            <span className="text-sm font-semibold tracking-tight text-white">
+            <span className="text-sm font-semibold tracking-tight text-sidebar-foreground">
               Lowcore Systems
             </span>
           )}
         </div>
 
-        <nav className="flex flex-1 flex-col gap-0.5 p-3" role="navigation" aria-label="Main navigation">
+        <nav className="flex flex-1 flex-col gap-0.5 p-3 overflow-y-auto" role="navigation" aria-label="Main navigation">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href))
             const linkContent = (
@@ -60,10 +60,10 @@ export function DashboardSidebar() {
                 key={item.label}
                 href={item.href}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors",
                   isActive
-                    ? "bg-zinc-800 text-white"
-                    : "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
+                    ? "bg-sidebar-accent text-sidebar-primary"
+                    : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
                 )}
                 aria-current={isActive ? "page" : undefined}
               >
@@ -86,10 +86,10 @@ export function DashboardSidebar() {
             return <div key={item.label}>{linkContent}</div>
           })}
           {!collapsed && (
-            <div className="mt-4 border-t border-zinc-800 pt-3">
+            <div className="mt-4 border-t border-sidebar-border pt-3">
               <Link
                 href="/admin"
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
               >
                 <Shield className="size-[18px] shrink-0" />
                 Admin
@@ -101,7 +101,7 @@ export function DashboardSidebar() {
               <TooltipTrigger asChild>
                 <Link
                   href="/admin"
-                  className="flex w-full items-center justify-center rounded-lg px-3 py-2.5 text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
+                  className="flex w-full items-center justify-center rounded-lg px-3 py-2 text-sidebar-foreground/60 hover:bg-sidebar-accent/50"
                 >
                   <Shield className="size-[18px]" />
                 </Link>
@@ -113,12 +113,12 @@ export function DashboardSidebar() {
           )}
         </nav>
 
-        <div className="border-t border-zinc-800 p-3">
+        <div className="border-t border-sidebar-border p-3">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setCollapsed(!collapsed)}
-            className="w-full justify-center text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300"
+            className="w-full justify-center text-sidebar-foreground/40 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {collapsed ? (

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isValidClientId } from "@/lib/validators";
+import { DashboardOverview } from "@/components/dashboard/dashboard-overview";
 
 function startOfMonthISO() {
   const d = new Date();
@@ -24,16 +25,10 @@ export default async function ClientDashboard({
     if (process.env.NODE_ENV === "development") {
       return (
         <div className="space-y-8">
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-muted-foreground">
             Supabase env not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local.
           </p>
-          <h2 className="text-2xl font-semibold text-white">Client Dashboard</h2>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <Card title="Leads" value={0} />
-            <Card title="Calls" value={0} />
-            <Card title="SMS Replies" value={0} />
-            <Card title="Booked" value={0} />
-          </div>
+          <DashboardOverview clientName="Demo" leads={0} calls={0} smsReplies={0} booked={0} />
         </div>
       );
     }
@@ -68,26 +63,14 @@ export default async function ClientDashboard({
   const booked = counts["appointment_booked"] ?? 0;
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight text-white">{clientName} Dashboard</h2>
-        <p className="mt-1 text-sm text-zinc-500">KPIs for this account</p>
-      </div>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <Card title="Leads" value={leads} />
-        <Card title="Calls" value={calls} />
-        <Card title="SMS Replies" value={smsReplies} />
-        <Card title="Booked" value={booked} />
-      </div>
-    </div>
-  );
-}
-
-function Card({ title, value }: { title: string; value: number }) {
-  return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 shadow-sm transition-colors hover:border-zinc-700">
-      <div className="text-xs font-medium uppercase tracking-wider text-zinc-500">{title}</div>
-      <div className="mt-2 text-2xl font-semibold tracking-tight text-white">{value}</div>
+    <div className="mx-auto flex max-w-[1400px] flex-col gap-5">
+      <DashboardOverview
+        clientName={clientName}
+        leads={leads}
+        calls={calls}
+        smsReplies={smsReplies}
+        booked={booked}
+      />
     </div>
   );
 }

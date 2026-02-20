@@ -1,0 +1,83 @@
+"use client"
+
+import { useState } from "react"
+import { KpiCards } from "@/components/dashboard/kpi-cards"
+import { LeadsChart } from "@/components/dashboard/leads-chart"
+import { FunnelChart } from "@/components/dashboard/funnel-chart"
+import { RecentActivity } from "@/components/dashboard/recent-activity"
+import { FollowUpsTable } from "@/components/dashboard/follow-ups-table"
+import { CallIntelligence } from "@/components/dashboard/call-intelligence"
+import { AutomationHealth } from "@/components/dashboard/automation-health"
+import { RequestModal } from "@/components/dashboard/request-modal"
+import {
+  kpiData,
+  leadsTimeseries,
+  funnelData,
+  recentActivity,
+  followUps,
+  callOutcomes,
+  callTopics,
+  systemHealth,
+  systemAlerts,
+} from "@/lib/dashboard-data"
+
+interface V0DashboardOverviewProps {
+  clientName: string
+}
+
+export function V0DashboardOverview({ clientName }: V0DashboardOverviewProps) {
+  const [requestOpen, setRequestOpen] = useState(false)
+
+  return (
+    <>
+      <div className="mx-auto flex max-w-[1400px] flex-col gap-5 p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">Dashboard Overview</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {clientName} — track your leads, calls, and pipeline performance
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-muted-foreground">
+              Last updated: {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })}
+            </span>
+            <button
+              type="button"
+              onClick={() => setRequestOpen(true)}
+              className="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted/50"
+            >
+              Request Changes
+            </button>
+          </div>
+        </div>
+
+        <KpiCards items={kpiData} />
+
+        <div className="grid gap-5 lg:grid-cols-5">
+          <div className="lg:col-span-3">
+            <LeadsChart data={leadsTimeseries} />
+          </div>
+          <div className="lg:col-span-2">
+            <FunnelChart data={funnelData} />
+          </div>
+        </div>
+
+        <div className="grid gap-5 lg:grid-cols-5">
+          <div className="lg:col-span-2">
+            <RecentActivity events={recentActivity} />
+          </div>
+          <div className="lg:col-span-3">
+            <FollowUpsTable data={followUps} />
+          </div>
+        </div>
+
+        <CallIntelligence outcomes={callOutcomes} topics={callTopics} />
+
+        <AutomationHealth systems={systemHealth} alerts={systemAlerts} />
+      </div>
+
+      <RequestModal open={requestOpen} onOpenChange={setRequestOpen} />
+    </>
+  )
+}

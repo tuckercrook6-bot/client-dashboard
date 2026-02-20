@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isValidClientId } from "@/lib/validators";
-import { DashboardOverview } from "@/components/dashboard/dashboard-overview";
+import { V0DashboardOverview } from "@/components/dashboard/v0-dashboard-overview";
 
 function startOfMonthISO() {
   const d = new Date();
@@ -28,7 +28,7 @@ export default async function ClientDashboard({
           <p className="text-sm text-muted-foreground">
             Supabase env not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local.
           </p>
-          <DashboardOverview clientName="Demo" leads={0} calls={0} smsReplies={0} booked={0} />
+          <V0DashboardOverview clientName="Demo" />
         </div>
       );
     }
@@ -57,20 +57,7 @@ export default async function ClientDashboard({
     return acc;
   }, {});
 
-  const leads = (counts["form_submit"] ?? 0) + (counts["lead_created"] ?? 0);
-  const calls = counts["call_ended"] ?? 0;
-  const smsReplies = counts["sms_reply"] ?? 0;
-  const booked = counts["appointment_booked"] ?? 0;
-
   return (
-    <div className="mx-auto flex max-w-[1400px] flex-col gap-5">
-      <DashboardOverview
-        clientName={clientName}
-        leads={leads}
-        calls={calls}
-        smsReplies={smsReplies}
-        booked={booked}
-      />
-    </div>
+    <V0DashboardOverview clientName={clientName} />
   );
 }

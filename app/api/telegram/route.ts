@@ -53,9 +53,9 @@ async function sendTelegram(token: string, chatId: number, text: string) {
 }
 
 async function getAIReply(userMessage: string): Promise<string> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
   if (!apiKey) {
-    return "OpenAI API key is not set. Add OPENAI_API_KEY in Vercel env.";
+    return "OpenAI API key is not set. In Vercel → Settings → Environment Variables, add OPENAI_API_KEY with your key from platform.openai.com, then redeploy.";
   }
 
   const systemPrompt = `You are a helpful assistant for the Lowcore client dashboard project (Next.js, Supabase, Vercel). You help with the app at app.lowcoresystems.com: client portal, admin dashboard, Retell/Twilio webhooks, and Supabase. Keep answers short and actionable.`;
@@ -67,7 +67,7 @@ async function getAIReply(userMessage: string): Promise<string> {
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: "gpt-4o-mini",
+      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userMessage },
@@ -76,12 +76,33 @@ async function getAIReply(userMessage: string): Promise<string> {
     }),
   });
 
+  const bodyText = await res.text();
+
   if (!res.ok) {
-    const t = await res.text();
-    return `Sorry, the AI returned an error. Check OPENAI_API_KEY and logs. (${res.status})`;
+    console.error("OpenAI API error:", res.status, bodyText);
+    let hint = "";
+    try {
+      const err = JSON.parse(bodyText) as { error?: { message?: string; code?: string } };
+      const msg = err?.error?.message || "";
+      if (res.status === 401 || msg.toLowerCase().includes("invalid") || msg.toLowerCase().includes("incorrect")) {
+        hint = " Your OPENAI_API_KEY may be wrong or expired. Get a new key at platform.openai.com.";
+      } else if (res.status === 429) {
+        hint = " Rate limit or quota. Check usage at platform.openai.com.";
+      } else if (msg.toLowerCase().includes("model")) {
+        hint = " Try setting OPENAI_MODEL to gpt-3.5-turbo in Vercel env.";
+      }
+    } catch {
+      // ignore parse error
+    }
+    return `OpenAI error (${res.status}).${hint} Check Vercel → Deployments → Logs for details.`;
   }
 
-  const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+  let data: { choices?: Array<{ message?: { content?: string } }> };
+  try {
+    data = JSON.parse(bodyText);
+  } catch {
+    return "OpenAI returned invalid JSON. Check Vercel logs.";
+  }
   const content = data?.choices?.[0]?.message?.content?.trim();
   return content || "No response.";
 }

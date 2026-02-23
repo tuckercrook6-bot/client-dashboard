@@ -12,25 +12,44 @@ import { Upload } from "lucide-react"
 interface RequestModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  /** When provided, request is tied to this client. */
+  clientId?: string | null
 }
 
-export function RequestModal({ open, onOpenChange }: RequestModalProps) {
+export function RequestModal({ open, onOpenChange, clientId }: RequestModalProps) {
   const [category, setCategory] = useState("")
   const [priority, setPriority] = useState("normal")
   const [description, setDescription] = useState("")
   const [submitting, setSubmitting] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
-    setTimeout(() => {
-      setSubmitting(false)
+    try {
+      const res = await fetch("/api/change-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: clientId || null,
+          category,
+          priority,
+          description,
+        }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || res.statusText)
+      }
       onOpenChange(false)
       setCategory("")
       setPriority("normal")
       setDescription("")
       toast.success("Request submitted", { description: "We'll review your request and get back to you shortly." })
-    }, 800)
+    } catch (err) {
+      toast.error("Failed to submit", { description: err instanceof Error ? err.message : "Please try again." })
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (

@@ -29,9 +29,11 @@ interface V0DashboardOverviewProps {
   counts?: EventCounts
   /** When provided, use for Recent Activity; otherwise use mock data. */
   activityEvents?: ActivityEvent[]
+  /** When provided, Request Changes modal will associate the request with this client. */
+  clientId?: string | null
 }
 
-export function V0DashboardOverview({ clientName, counts, activityEvents }: V0DashboardOverviewProps) {
+export function V0DashboardOverview({ clientName, counts, activityEvents, clientId }: V0DashboardOverviewProps) {
   const [requestOpen, setRequestOpen] = useState(false)
   const kpis = counts ? buildKpisFromCounts(counts, kpiData) : kpiData
   const activity = activityEvents ?? defaultRecentActivity
@@ -85,7 +87,7 @@ export function V0DashboardOverview({ clientName, counts, activityEvents }: V0Da
         <AutomationHealth systems={systemHealth} alerts={systemAlerts} />
       </div>
 
-      <RequestModal open={requestOpen} onOpenChange={setRequestOpen} />
+      <RequestModal open={requestOpen} onOpenChange={setRequestOpen} clientId={clientId} />
     </>
   )
 }

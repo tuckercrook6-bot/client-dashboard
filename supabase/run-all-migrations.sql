@@ -234,3 +234,21 @@ CREATE POLICY "Admins can read all sms_messages" ON sms_messages FOR SELECT
   USING (EXISTS (SELECT 1 FROM memberships WHERE user_id = auth.uid() AND role = 'admin'));
 
 -- Done. Next: set one user as admin (see README or run set-first-admin script).
+
+-- ========== 00005 change_requests ==========
+CREATE TABLE IF NOT EXISTS change_requests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id UUID REFERENCES clients(id) ON DELETE SET NULL,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  category TEXT NOT NULL,
+  priority TEXT NOT NULL DEFAULT 'normal',
+  description TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_change_requests_client_id ON change_requests(client_id);
+CREATE INDEX IF NOT EXISTS idx_change_requests_created_at ON change_requests(created_at DESC);
+ALTER TABLE change_requests ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can insert own change_requests" ON change_requests;
+CREATE POLICY "Users can insert own change_requests" ON change_requests FOR INSERT WITH CHECK (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users can read own change_requests" ON change_requests;
+CREATE POLICY "Users can read own change_requests" ON change_requests FOR SELECT USING (user_id = auth.uid());

@@ -84,6 +84,7 @@ export default async function ClientDashboard({
       clientName={clientName}
       counts={counts}
       activityEvents={realActivity}
+      clientId={clientId}
     />
   );
 }

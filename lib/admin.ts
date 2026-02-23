@@ -138,7 +138,7 @@ export async function getAdminActivityTimeseries(
 ): Promise<AdminActivityPoint[]> {
   const supabase = await createClient();
   if (!supabase || clientIds.length === 0) {
-    return fillDailyPoints(days, []);
+    return fillDailyPoints(days, {});
   }
   const since = new Date();
   since.setDate(since.getDate() - days);

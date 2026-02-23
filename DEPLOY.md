@@ -14,13 +14,17 @@
 
 ## 3. Environment variables (Vercel → Project → Settings → Environment Variables)
 
-Add for **Production**, **Preview**, and **Development**:
+**Required for production.** Add these for **Production** (and Preview if you use it). Copy the values from your local `.env.local` or from Supabase → Settings → API.
 
 | Name | Value |
 |------|--------|
 | `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase Project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon key |
-| `SUPABASE_SERVICE_ROLE_KEY` | (Optional) For seed script / admin APIs |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase publishable/anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Your Supabase service_role key (needed for webhooks and auth) |
+
+Optional (for Retell/Twilio webhooks): `RETELL_WEBHOOK_SECRET`, `TWILIO_WEBHOOK_SECRET`, `ZAPIER_WEBHOOK_SECRET`.
+
+After adding or changing variables, trigger a new deploy (Deployments → ⋮ on latest → Redeploy).
 
 ## 4. Custom domain (app.lowcoresystems.com)
 

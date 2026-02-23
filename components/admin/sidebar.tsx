@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, ChevronLeft, ChevronRight, Zap, ExternalLink } from "lucide-react";
+import { LayoutDashboard, Users, ChevronLeft, ChevronRight, Zap, ExternalLink, Webhook } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -16,6 +16,7 @@ import {
 const navItems = [
   { label: "Overview", icon: LayoutDashboard, href: "/admin" },
   { label: "Clients", icon: Users, href: "/admin/clients" },
+  { label: "Webhooks", icon: Webhook, href: "/admin/webhooks" },
 ];
 
 export function AdminSidebar() {

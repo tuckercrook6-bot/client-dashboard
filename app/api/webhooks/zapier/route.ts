@@ -1,6 +1,27 @@
 import { NextResponse } from "next/server";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
 
+/**
+ * POST /api/webhooks/zapier
+ *
+ * Zapier (or any sender) can POST events to drive the client dashboard.
+ *
+ * Headers:
+ *   x-webhook-secret: must match ZAPIER_WEBHOOK_SECRET
+ *
+ * Body (JSON):
+ *   client_id (required) – UUID of the client in Supabase `clients` table
+ *   type (required)      – Event type (see below)
+ *   source (required)    – e.g. "zapier", "calendly", "typeform"
+ *   occurred_at (optional) – ISO timestamp; defaults to now
+ *   payload (optional)   – arbitrary JSON; shown in Recent Activity (description from payload.description or payload.summary)
+ *
+ * Event types that drive the client dashboard:
+ *   lead_created, form_submit → New Leads KPI + Recent Activity
+ *   call_ended               → Answered Calls KPI + Recent Activity
+ *   sms_reply                 → SMS Follow-ups KPI + Recent Activity
+ *   appointment_booked        → Appointments KPI + Recent Activity
+ */
 export async function POST(req: Request) {
   try {
     const secret = req.headers.get("x-webhook-secret");

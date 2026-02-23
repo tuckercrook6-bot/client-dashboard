@@ -4,33 +4,38 @@ import {
   getAdminMetrics,
   getRecentEvents,
   getClientsWithUsage,
+  getAdminActivityTimeseries,
 } from "@/lib/admin";
 import { MetricCard } from "@/components/admin/metric-card";
 import { ActivityFeed } from "@/components/admin/activity-feed";
 import { ClientsTable } from "@/components/admin/clients-table";
+import { AdminActivityChart } from "@/components/admin/activity-chart";
 import { Button } from "@/components/ui/button";
 import { Users, UserCheck, Phone, UserPlus, MessageSquare, ExternalLink } from "lucide-react";
+
+const CHART_DAYS = 7;
 
 export default async function AdminOverviewPage() {
   const clients = await getUserClients();
   const clientIds = clients.map((c) => c.id);
 
-  const [metrics, recentEvents, clientsWithUsage] = await Promise.all([
+  const [metrics, recentEvents, clientsWithUsage, activityTimeseries] = await Promise.all([
     getAdminMetrics(clientIds),
     getRecentEvents(clientIds, 10),
     getClientsWithUsage(clients),
+    getAdminActivityTimeseries(clientIds, CHART_DAYS),
   ]);
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-4 border-b border-zinc-800/80 pb-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight text-white">Overview</h2>
-          <p className="mt-1 text-sm text-zinc-500">
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground">Overview</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             Your clients and activity at a glance.
           </p>
         </div>
-        <Button asChild size="sm" className="w-fit shrink-0 gap-2 border-zinc-700 bg-zinc-800/80 text-white hover:bg-zinc-700">
+        <Button asChild size="sm" className="w-fit shrink-0 gap-2 border-border bg-card text-foreground hover:bg-muted">
           <Link href="/dashboard/portal">
             <ExternalLink className="size-4" />
             Open client portal
@@ -64,11 +69,15 @@ export default async function AdminOverviewPage() {
           icon={UserPlus}
         />
         <MetricCard
-          label="SMS sent"
+          label="SMS replies"
           value={metrics.smsSent}
           sublabel="This month"
           icon={MessageSquare}
         />
+      </section>
+
+      <section>
+        <AdminActivityChart data={activityTimeseries} days={CHART_DAYS} />
       </section>
 
       <div className="grid gap-6 lg:grid-cols-3">

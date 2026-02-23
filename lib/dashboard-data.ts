@@ -30,6 +30,83 @@ export const kpiData: KpiItem[] = [
   { title: "Response Time", value: "1m 24s", secondary: "avg first response", change: "-18%", changeType: "positive", icon: Clock, sparkline: [180, 160, 170, 140, 150, 130, 120, 110, 100, 95, 90, 84] },
 ]
 
+/** Event counts from webhooks (Zapier, Retell, Twilio). Used to drive real KPIs on the client dashboard. */
+export type EventCounts = { leads: number; calls: number; sms: number; booked: number }
+
+/** Override first 4 KPI values (New Leads, Answered Calls, SMS Follow-ups, Appointments) from real counts. */
+export function buildKpisFromCounts(counts: EventCounts, base: KpiItem[]): KpiItem[] {
+  const copy = base.map((k) => ({ ...k }))
+  const format = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n)
+  if (copy[0]) copy[0].value = format(counts.leads)
+  if (copy[1]) copy[1].value = format(counts.calls)
+  if (copy[3]) copy[3].value = format(counts.sms)
+  if (copy[4]) copy[4].value = format(counts.booked)
+  return copy
+}
+
+/** Raw event row from Supabase `events` (e.g. from Zapier webhook). */
+export type RawEvent = { id: string; type: string; occurred_at: string; payload?: Record<string, unknown> }
+
+/** Map API event type to dashboard ActivityEvent type. */
+const eventTypeToActivity: Record<string, ActivityEvent["type"]> = {
+  call_ended: "call_answered",
+  call_missed: "call_missed",
+  sms_reply: "sms_reply",
+  sms_sent: "sms_sent",
+  appointment_booked: "appointment",
+  lead_created: "lead_update",
+  form_submit: "lead_update",
+}
+
+function formatRelativeTime(iso: string, now: Date): string {
+  const then = new Date(iso)
+  const diffMs = now.getTime() - then.getTime()
+  const diffMins = Math.floor(diffMs / 60_000)
+  const diffHours = Math.floor(diffMins / 60)
+  const diffDays = Math.floor(diffHours / 24)
+  if (diffMins < 1) return "Just now"
+  if (diffMins < 60) return `${diffMins} min ago`
+  if (diffHours < 24) return `${diffHours} hr ago`
+  if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`
+  return then.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+}
+
+function defaultDescription(type: string, payload?: Record<string, unknown>): string {
+  const fromPayload = payload?.description ?? payload?.summary ?? payload?.message
+  if (typeof fromPayload === "string") return fromPayload
+  switch (type) {
+    case "call_ended":
+      return "Call completed"
+    case "sms_reply":
+      return "SMS reply received"
+    case "appointment_booked":
+      return "Appointment booked"
+    case "lead_created":
+    case "form_submit":
+      return "New lead or form submission"
+    default:
+      return `${type.replace(/_/g, " ")}`
+  }
+}
+
+function channelForType(type: string): string {
+  if (type.includes("call")) return "Call"
+  if (type.includes("sms")) return "SMS"
+  if (type === "appointment_booked") return "Booking"
+  return "CRM"
+}
+
+/** Build dashboard Recent Activity list from raw events (Zapier/Retell/Twilio). */
+export function buildActivityFromEvents(events: RawEvent[], now: Date = new Date()): ActivityEvent[] {
+  return events.map((e) => ({
+    id: e.id,
+    type: eventTypeToActivity[e.type] ?? "lead_update",
+    description: defaultDescription(e.type, e.payload),
+    time: formatRelativeTime(e.occurred_at, now),
+    channel: channelForType(e.type),
+  }))
+}
+
 export interface LeadsTimeseriesPoint {
   date: string
   calls: number

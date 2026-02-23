@@ -2,6 +2,13 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isValidClientId } from "@/lib/validators";
 import { V0DashboardOverview } from "@/components/dashboard/v0-dashboard-overview";
+import {
+  kpiData,
+  recentActivity as mockRecentActivity,
+  buildKpisFromCounts,
+  buildActivityFromEvents,
+  type RawEvent,
+} from "@/lib/dashboard-data";
 
 function startOfMonthISO() {
   const d = new Date();
@@ -43,21 +50,43 @@ export default async function ClientDashboard({
   if (!client) {
     notFound();
   }
+  const clientName = client.name;
 
   const { data: eventsData } = await supabase
     .from("events")
-    .select("type, occurred_at")
+    .select("id, type, occurred_at, payload")
     .eq("client_id", clientId)
-    .gte("occurred_at", since);
-  const events: { type: string; occurred_at: string }[] = eventsData ?? [];
-  const clientName = client.name;
+    .gte("occurred_at", since)
+    .order("occurred_at", { ascending: false });
+  const events: { id: string; type: string; occurred_at: string; payload?: Record<string, unknown> }[] = eventsData ?? [];
 
-  const counts = events.reduce((acc: Record<string, number>, e) => {
-    acc[e.type] = (acc[e.type] ?? 0) + 1;
-    return acc;
-  }, {});
+  const counts = events.reduce(
+    (acc, e) => {
+      if (e.type === "form_submit" || e.type === "lead_created") acc.leads += 1;
+      else if (e.type === "call_ended") acc.calls += 1;
+      else if (e.type === "sms_reply") acc.sms += 1;
+      else if (e.type === "appointment_booked") acc.booked += 1;
+      return acc;
+    },
+    { leads: 0, calls: 0, sms: 0, booked: 0 }
+  );
+
+  const realKpis = buildKpisFromCounts(counts, kpiData);
+  const recentEventsRaw: RawEvent[] = (eventsData ?? []).slice(0, 20).map((e) => ({
+    id: e.id,
+    type: e.type,
+    occurred_at: e.occurred_at,
+    payload: (e.payload as Record<string, unknown>) ?? undefined,
+  }));
+  const realActivity = recentEventsRaw.length > 0
+    ? buildActivityFromEvents(recentEventsRaw, new Date())
+    : mockRecentActivity;
 
   return (
-    <V0DashboardOverview clientName={clientName} />
+    <V0DashboardOverview
+      clientName={clientName}
+      kpiItems={realKpis}
+      activityEvents={realActivity}
+    />
   );
 }

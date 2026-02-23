@@ -60,9 +60,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: smsError.message }, { status: 500 });
     }
 
+    const isInbound = direction === "inbound";
     await supabase.from("events").insert({
       client_id: organization_id,
-      type: "sms_reply",
+      type: isInbound ? "sms_reply" : "sms_sent",
       source: "twilio",
       occurred_at: new Date().toISOString(),
       payload: body,

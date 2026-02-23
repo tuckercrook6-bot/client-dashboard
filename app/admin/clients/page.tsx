@@ -8,9 +8,9 @@ export default async function AdminClientsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="border-b border-zinc-800/80 pb-6">
-        <h2 className="text-2xl font-semibold tracking-tight text-white">Clients</h2>
-        <p className="mt-1 text-sm text-zinc-500">
+      <div className="border-b border-border pb-6">
+        <h2 className="text-2xl font-semibold tracking-tight text-foreground">Clients</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
           Manage and view client KPIs from the client portal.
         </p>
       </div>

@@ -13,20 +13,27 @@ import {
   kpiData,
   leadsTimeseries,
   funnelData,
-  recentActivity,
+  recentActivity as defaultRecentActivity,
   followUps,
   callOutcomes,
   callTopics,
   systemHealth,
   systemAlerts,
 } from "@/lib/dashboard-data"
+import type { KpiItem, ActivityEvent } from "@/lib/dashboard-data"
 
 interface V0DashboardOverviewProps {
   clientName: string
+  /** When provided, use these KPIs (e.g. from Zapier/events); otherwise use mock data. */
+  kpiItems?: KpiItem[]
+  /** When provided, use for Recent Activity; otherwise use mock data. */
+  activityEvents?: ActivityEvent[]
 }
 
-export function V0DashboardOverview({ clientName }: V0DashboardOverviewProps) {
+export function V0DashboardOverview({ clientName, kpiItems, activityEvents }: V0DashboardOverviewProps) {
   const [requestOpen, setRequestOpen] = useState(false)
+  const kpis = kpiItems ?? kpiData
+  const activity = activityEvents ?? defaultRecentActivity
 
   return (
     <>
@@ -52,7 +59,7 @@ export function V0DashboardOverview({ clientName }: V0DashboardOverviewProps) {
           </div>
         </div>
 
-        <KpiCards items={kpiData} />
+        <KpiCards items={kpis} />
 
         <div className="grid gap-5 lg:grid-cols-5">
           <div className="lg:col-span-3">
@@ -65,7 +72,7 @@ export function V0DashboardOverview({ clientName }: V0DashboardOverviewProps) {
 
         <div className="grid gap-5 lg:grid-cols-5">
           <div className="lg:col-span-2">
-            <RecentActivity events={recentActivity} />
+            <RecentActivity events={activity} />
           </div>
           <div className="lg:col-span-3">
             <FollowUpsTable data={followUps} />

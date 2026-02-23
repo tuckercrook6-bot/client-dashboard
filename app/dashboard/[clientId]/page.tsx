@@ -3,9 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isValidClientId } from "@/lib/validators";
 import { V0DashboardOverview } from "@/components/dashboard/v0-dashboard-overview";
 import {
-  kpiData,
   recentActivity as mockRecentActivity,
-  buildKpisFromCounts,
   buildActivityFromEvents,
   type RawEvent,
 } from "@/lib/dashboard-data";
@@ -71,7 +69,6 @@ export default async function ClientDashboard({
     { leads: 0, calls: 0, sms: 0, booked: 0 }
   );
 
-  const realKpis = buildKpisFromCounts(counts, kpiData);
   const recentEventsRaw: RawEvent[] = (eventsData ?? []).slice(0, 20).map((e) => ({
     id: e.id,
     type: e.type,
@@ -85,7 +82,7 @@ export default async function ClientDashboard({
   return (
     <V0DashboardOverview
       clientName={clientName}
-      kpiItems={realKpis}
+      counts={counts}
       activityEvents={realActivity}
     />
   );

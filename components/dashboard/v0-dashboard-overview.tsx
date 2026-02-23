@@ -19,20 +19,21 @@ import {
   callTopics,
   systemHealth,
   systemAlerts,
+  buildKpisFromCounts,
 } from "@/lib/dashboard-data"
-import type { KpiItem, ActivityEvent } from "@/lib/dashboard-data"
+import type { ActivityEvent, EventCounts } from "@/lib/dashboard-data"
 
 interface V0DashboardOverviewProps {
   clientName: string
-  /** When provided, use these KPIs (e.g. from Zapier/events); otherwise use mock data. */
-  kpiItems?: KpiItem[]
+  /** When provided, KPI cards use these counts; otherwise use mock data. */
+  counts?: EventCounts
   /** When provided, use for Recent Activity; otherwise use mock data. */
   activityEvents?: ActivityEvent[]
 }
 
-export function V0DashboardOverview({ clientName, kpiItems, activityEvents }: V0DashboardOverviewProps) {
+export function V0DashboardOverview({ clientName, counts, activityEvents }: V0DashboardOverviewProps) {
   const [requestOpen, setRequestOpen] = useState(false)
-  const kpis = kpiItems ?? kpiData
+  const kpis = counts ? buildKpisFromCounts(counts, kpiData) : kpiData
   const activity = activityEvents ?? defaultRecentActivity
 
   return (
